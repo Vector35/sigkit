@@ -1,0 +1,15 @@
+__pycache__
+*.bndb
+*.a
+*.so
+*.so.6
+testcases/
+*.pyc
+.idea
+
+*.pkl
+*.fb
+*.sig
+*.zlib
+
+sigs/
