@@ -26,7 +26,8 @@ import sys
 import os
 
 from PySide2.QtCore import (Qt, QRect, QItemSelectionModel, QItemSelection, QSize, Signal)
-from PySide2.QtGui import (QStandardItemModel, QIcon, QStandardItem, QKeySequence, QFont, QBrush, QTextDocument, QCursor)
+from PySide2.QtGui import (QStandardItemModel, QIcon, QStandardItem, QKeySequence, QFont, QBrush, QTextDocument,
+						   QCursor, QFontDatabase, QPalette)
 from PySide2.QtWidgets import (QApplication, QTreeView, QVBoxLayout, QWidget, QMenu, QAction, QMainWindow, QFileDialog,
 							   QStyledItemDelegate, QStyle, QGroupBox, QHBoxLayout, QPushButton, QAbstractItemView,
 							   QInputDialog, QMessageBox, QLabel)
@@ -83,9 +84,9 @@ class App(QMainWindow):
 		self.model.setHeaderData(0, Qt.Horizontal, 'Signature')
 		self.model.setHeaderData(1, Qt.Horizontal, 'Function')
 		self.model.setHeaderData(2, Qt.Horizontal, 'Callees')
-		self.model.setHeaderData(3, Qt.Horizontal, 'Source Binary')
-		self.model.setHeaderData(4, Qt.Horizontal, 'Offset Extra Pattern')
-		self.model.setHeaderData(5, Qt.Horizontal, 'Extra Pattern')
+		self.model.setHeaderData(3, Qt.Horizontal, 'Offset Extra Pattern')
+		self.model.setHeaderData(4, Qt.Horizontal, 'Extra Pattern')
+		self.model.setHeaderData(5, Qt.Horizontal, 'Source Binary')
 		self.model.setHeaderData(6, Qt.Horizontal, 'ID')
 		self.treeView.setModel(self.model)
 
@@ -93,13 +94,13 @@ class App(QMainWindow):
 		self.treeView.setColumnWidth(0, 400)
 		self.treeView.setColumnWidth(1, 200)
 		self.treeView.setColumnWidth(2, 250)
-		self.treeView.setColumnWidth(3, 200)
-		self.treeView.setColumnWidth(4, 25)
+		self.treeView.setColumnWidth(3, 25)
+		self.treeView.setColumnWidth(4, 100)
 		self.treeView.setColumnWidth(5, 200)
 		self.treeView.setColumnWidth(6, 75)
 		self.treeView.setItemDelegateForColumn(0, self.pattern_delegate)
 		self.treeView.setItemDelegateForColumn(2, self.callee_delegate)
-		self.treeView.setItemDelegateForColumn(5, self.pattern_delegate)
+		self.treeView.setItemDelegateForColumn(4, self.pattern_delegate)
 		self.treeView.horizontalScrollBar().setEnabled(True)
 		self.treeView.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
 		self.treeView.setEditTriggers(QAbstractItemView.NoEditTriggers)
@@ -290,9 +291,9 @@ class App(QMainWindow):
 		cols = [pattern_col_item,
 				QStandardItem(func.name),
 				callees_item,
-				QStandardItem(func.source_binary),
 				QStandardItem(str(func.pattern_offset) if func.pattern else ''),
 				QStandardItem(str(func.pattern) if func.pattern else ''),
+				QStandardItem(func.source_binary),
 				QStandardItem(self.generate_href(func))]
 		boldface = cols[1].font()
 		boldface.setBold(True)
@@ -336,17 +337,16 @@ class App(QMainWindow):
 		self.sig_trie = sig_trie
 		root_node = self.add_trie_node(self.model, filename, sig_trie)
 		self.add_bridge_nodes(root_node, sig_trie)
-		print('Done')
 
 
 # copy-pasted off https://stackoverflow.com/questions/55923137/ lol
 class PatternDelegate(QStyledItemDelegate):
 	def __init__(self):
 		super(PatternDelegate, self).__init__()
-		self.font = QFont("Consolas")
+		self.font = QFontDatabase.systemFont(QFontDatabase.FixedFont)
 
 	def paint(self, painter, option, index):
-		if not index.data():
+		if index.data() is None:
 			return
 		painter.save()
 
@@ -354,7 +354,7 @@ class PatternDelegate(QStyledItemDelegate):
 		defaultPen = painter.pen()
 		self.initStyleOption(option, index)
 		style = option.widget.style()
-		option.text = "" # wipe out the text passed to the original renderer, so just have it render the background
+		option.text = '' # wipe out the text passed to the original renderer, so just have it render the background
 		style.drawControl(QStyle.CE_ItemViewItem, option, painter, option.widget)
 
 		offset = 3
@@ -363,6 +363,10 @@ class PatternDelegate(QStyledItemDelegate):
 		rightBorder = option.rect.left() + option.rect.width() - offset
 
 		option.rect.moveRight(option.rect.right() + offset)
+
+		textRole = QPalette.NoRole
+		if option.state & QStyle.State_Selected:
+			textRole = QPalette.HighlightedText
 
 		color = 0
 		painter.setPen(defaultPen)
@@ -377,10 +381,10 @@ class PatternDelegate(QStyledItemDelegate):
 			charWidth = painter.fontMetrics().width(c)
 			drawRect = option.rect
 			if drawRect.left() + charWidth + ellipsisWidth > rightBorder:
-				style.drawItemText(painter, drawRect, option.displayAlignment, option.palette, True, ellipsis)
+				style.drawItemText(painter, drawRect, option.displayAlignment, option.palette, True, ellipsis, textRole)
 				break
 
-			style.drawItemText(painter, drawRect, option.displayAlignment, option.palette, True, c)
+			style.drawItemText(painter, drawRect, option.displayAlignment, option.palette, True, c, textRole)
 
 			option.rect.moveRight(option.rect.right() + charWidth)
 
