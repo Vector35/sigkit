@@ -1,4 +1,4 @@
-# Signature Kit Plugin (v1.0)
+# Signature Kit Plugin (v1.0.1)
 Author: **Vector 35 Inc**
 _Python tools for working with Signature Libraries_
 ## Description:
@@ -17,11 +17,11 @@ Also included are [example scripts](https://github.com/Vector35/sigkit/tree/mast
 
 
 
-### Linux
-
-
-
 ### Darwin
+
+
+
+### Linux
 
 
 ## Minimum Version

@@ -22,6 +22,8 @@
 JSON serialization / deserialization
 """
 
+import json
+
 from . import signaturelibrary
 
 def _serialize_func_node(func_node, func_node_ids):
@@ -46,7 +48,7 @@ def _serialize_trie_node(trie_node, func_node_ids):
 		'functions': functions,
 	}
 
-def serialize_sig_trie(sig_trie):
+def serialize(sig_trie):
 	"""
 	Serialize a signature trie to a JSON-compatible format.
 	:param sig_trie: `TrieNode` object
@@ -85,7 +87,7 @@ def _deserialize_trie_node(serialized, funcs_arr):
 		[funcs_arr[i] for i in serialized['functions']] if serialized['functions'] else []
 	)
 
-def deserialize_sig_trie(serialized):
+def deserialize(serialized):
 	"""
 	Deserialize a signature trie from JSON data.
 	:param serialized: a dict containing JSON-format data to signature trie objects.
@@ -98,3 +100,15 @@ def deserialize_sig_trie(serialized):
 							for call_site, callee_id in funcs_serialized[i]['callees'].items()}
 
 	return _deserialize_trie_node(serialized['trie'], funcs)
+
+def dumps(sig_trie, *args, **kwargs):
+	return json.dumps(serialize(sig_trie), *args, **kwargs)
+
+def dump(sig_trie, fp, *args, **kwargs):
+	return json.dump(serialize(sig_trie), fp, *args, **kwargs)
+
+def loads(serialized, *args, **kwargs):
+	return deserialize(json.loads(serialized, *args, **kwargs))
+
+def load(fp, *args, **kwargs):
+	return deserialize(json.load(fp, *args, **kwargs))

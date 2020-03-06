@@ -28,6 +28,21 @@ from . import trie_ops
 from . import sig_serialize_fb
 from . import sigexplorer
 
+# exports and utility functions
+SignatureLibraryReader = sig_serialize_fb.SignatureLibraryReader
+SignatureLibraryWriter = sig_serialize_fb.SignatureLibraryWriter
+
+def load_signature_library(filename):
+	with open(filename, 'rb') as f:
+		buf = f.read()
+	return SignatureLibraryReader().deserialize(buf)
+
+def save_signature_library(sig_lib, filename):
+	buf = SignatureLibraryWriter().serialize(sig_lib)
+	with open(filename, 'wb') as f:
+		f.write(buf)
+
+
 def generate_signature_library(bv):
 	guess_relocs = len(bv.relocation_ranges) == 0
 	if guess_relocs:
@@ -40,7 +55,6 @@ def generate_signature_library(bv):
 	# Warning for usability purposes. Someone will be confused why it's skipping auto-named functions
 	if func_count / float(len(bv.functions)) < 0.5:
 		log.log_warn("Functions that don't have a name or symbol will be skipped")
-		log.log_warn("%f"% (func_count / len(bv.functions),))
 
 	funcs = {}
 	for func in bv.functions:

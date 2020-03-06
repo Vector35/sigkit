@@ -261,3 +261,16 @@ class SignatureLibraryReader(object):
 		for func in trie.all_values(): # recalculate refcounts
 			func.ref_count += 1
 		return trie
+
+
+def dumps(sig_trie, **kwargs):
+	return SignatureLibraryWriter(**kwargs).serialize(sig_trie)
+
+def dump(sig_trie, fp, **kwargs):
+	fp.write(dumps(sig_trie, **kwargs))
+
+def loads(serialized):
+	return SignatureLibraryReader().deserialize(serialized)
+
+def load(fp):
+	return loads(fp.read())

@@ -62,11 +62,6 @@ class App(QMainWindow):
 
 		self.init_ui()
 
-		# with open('merged_libc.sig', 'rb') as f:
-		#     json_trie = zlib.decompress(f.read()).decode('utf-8')
-		# sig_trie = trie_ops.deserialize_sig_trie(json.loads(json_trie))
-		# self.open_trie(sig_trie, 'merged_libc.sig')
-
 	def init_ui(self):
 		self.setWindowTitle('Signature Explorer')
 		self.resize(1000, 640)
@@ -225,11 +220,11 @@ class App(QMainWindow):
 		if filter == json_zlib_filter:
 			with open(fname, 'rb') as f:
 				json_trie = zlib.decompress(f.read()).decode('utf-8')
-			sig_trie = sig_serialize_json.deserialize_sig_trie(json.loads(json_trie))
+			sig_trie = sig_serialize_json.deserialize(json.loads(json_trie))
 		elif filter == json_filter:
 			with open(fname, 'r') as f:
 				json_trie = f.read()
-			sig_trie = sig_serialize_json.deserialize_sig_trie(json.loads(json_trie))
+			sig_trie = sig_serialize_json.deserialize(json.loads(json_trie))
 		elif filter == sig_filter:
 			with open(fname, 'rb') as f:
 				fb_trie = f.read()
@@ -251,10 +246,10 @@ class App(QMainWindow):
 
 		if filter == json_zlib_filter:
 			with open(fname, 'wb') as f:
-				f.write(zlib.compress(sig_serialize_json.serialize_sig_trie(self.sig_trie).encode('utf-8')))
+				f.write(zlib.compress(sig_serialize_json.serialize(self.sig_trie).encode('utf-8')))
 		elif filter == json_filter:
 			with open(fname, 'w') as f:
-				json.dump(sig_serialize_json.serialize_sig_trie(self.sig_trie), f, indent=4)
+				json.dump(sig_serialize_json.serialize(self.sig_trie), f, indent=4)
 		elif filter == sig_filter:
 			with open(fname, 'wb') as f:
 				f.write(sig_serialize_fb.SignatureLibraryWriter().serialize(self.sig_trie))

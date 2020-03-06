@@ -77,6 +77,6 @@ print("Post-merge size: %d funcs" % (func_count(dst_trie),))
 sigkit.trie_ops.finalize_trie(dst_trie, dst_info)
 print("Finalized size: %d funcs" % (func_count(dst_trie),))
 
-print(json.dumps(sigkit.sig_serialize_json.serialize_sig_trie(dst_trie)))
+print(json.dumps(sigkit.sig_serialize_json.serialize(dst_trie)))
 import sigexplorer
 sigexplorer.show_signature_library(dst_trie)

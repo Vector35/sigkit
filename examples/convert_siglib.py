@@ -41,7 +41,7 @@ if __name__ == '__main__':
 	elif ext == '.json.zlib':
 		import json, zlib
 		with open(filename, 'rb') as f:
-			sig_trie =  sigkit.sig_serialize_json.deserialize_sig_trie(json.loads(zlib.decompress(f.read()).decode('utf-8')))
+			sig_trie =  sigkit.sig_serialize_json.deserialize(json.loads(zlib.decompress(f.read()).decode('utf-8')))
 	else:
 		print('Unsupported file extension ' + ext)
 		sys.exit(1)
