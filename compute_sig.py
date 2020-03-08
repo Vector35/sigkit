@@ -158,7 +158,7 @@ def compute_callees(func):
 	so we make those callees wildcard (when we finalize the trie and resolve references).
 	in our matching algorithm, we allow calls to wildcard callee to be optional.
 	:param func: BinaryNinja api function
-	:return: dictionary of {offset: (destination name, reference type)}
+	:return: dictionary of {offset: (destination name, `ReferenceType`)}
 	"""
 	bv = func.view
 	callees = {}
@@ -236,7 +236,7 @@ def process_function(func, guess_relocs):
 	func_node = signaturelibrary.FunctionNode(func.name)
 	func_node.source_binary = func.view.file.filename
 
-	info = trie_ops.FunctionInfo()
+	info = signaturelibrary.FunctionInfo()
 	info.patterns = [function_pattern(func, guess_relocs)]
 	info.callees = compute_callees(func)
 	info.aliases = list(map(lambda s: s.decode('utf-8'), func.symbol.aliases))

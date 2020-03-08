@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 # Copyright (c) 2015-2020 Vector 35 Inc
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -30,7 +32,7 @@ import time
 
 from binaryninja import *
 
-import sigkit.compute_sig
+import sigkit
 
 def process_bv(bv):
 	global results
@@ -40,7 +42,7 @@ def process_bv(bv):
 	for func in bv.functions:
 		try:
 			if bv.get_symbol_at(func.start) is None: continue
-			node, info = sigkit.compute_sig.process_function(func, guess_relocs)
+			node, info = sigkit.generate_function_signature(func, guess_relocs)
 			results.put((node, info))
 			print("Processed", func.name)
 		except:

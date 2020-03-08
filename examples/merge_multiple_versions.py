@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 # Copyright (c) 2015-2020 Vector 35 Inc
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -33,7 +35,7 @@ import pickle, json
 import gc
 from pathlib import Path
 
-import sigkit.signaturelibrary, sigkit.trie_ops, sigkit.sig_serialize_json
+import sigkit.signaturelibrary, sigkit.trie_ops, sigkit.sig_serialize_json, sigkit.sigexplorer
 
 
 def func_count(trie):
@@ -78,5 +80,4 @@ sigkit.trie_ops.finalize_trie(dst_trie, dst_info)
 print("Finalized size: %d funcs" % (func_count(dst_trie),))
 
 print(json.dumps(sigkit.sig_serialize_json.serialize(dst_trie)))
-import sigexplorer
-sigexplorer.show_signature_library(dst_trie)
+sigkit.explore_signature_library(dst_trie)

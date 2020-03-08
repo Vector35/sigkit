@@ -22,28 +22,51 @@
 
 from binaryninja import *
 
-from . import signaturelibrary
-from . import compute_sig
+# exports
 from . import trie_ops
 from . import sig_serialize_fb
-from . import sigexplorer
+from . import sig_serialize_json
 
-# exports and utility functions
-SignatureLibraryReader = sig_serialize_fb.SignatureLibraryReader
-SignatureLibraryWriter = sig_serialize_fb.SignatureLibraryWriter
+from .signaturelibrary import TrieNode, FunctionNode, Pattern, MaskedByte, new_trie
+from .sig_serialize_fb import SignatureLibraryReader, SignatureLibraryWriter
+from .compute_sig import process_function as generate_function_signature
+from .sigexplorer import explore_signature_library
 
 def load_signature_library(filename):
+	"""
+	Load a signature library from a .sig file.
+	:param filename: input filename
+	:return: instance of `TrieNode`, the root of the signature trie.
+	"""
 	with open(filename, 'rb') as f:
 		buf = f.read()
 	return SignatureLibraryReader().deserialize(buf)
 
 def save_signature_library(sig_lib, filename):
+	"""
+	Save the given signature library to a file.
+	:param sig_lib: instance of `TrieNode`, the root of the signature trie.
+	:param filename: destination filename
+	"""
 	buf = SignatureLibraryWriter().serialize(sig_lib)
 	with open(filename, 'wb') as f:
 		f.write(buf)
 
+def signature_explorer(prompt=True):
+	"""
+	Open the signature explorer UI.
+	:param prompt: if True, prompt the user to open a file immediately.
+	:return: `App`, a QT window
+	"""
+	app = sigexplorer.App()
+	if prompt:
+		app.open_file()
+	app.show()
+	return app
 
-def generate_signature_library(bv):
+
+# UI plugin code
+def _generate_signature_library(bv):
 	guess_relocs = len(bv.relocation_ranges) == 0
 	if guess_relocs:
 		log.log_debug('Relocation information unavailable; choosing pattern masks heuristically')
@@ -54,44 +77,40 @@ def generate_signature_library(bv):
 	log.log_info('Generating signatures for %d functions' % (func_count,))
 	# Warning for usability purposes. Someone will be confused why it's skipping auto-named functions
 	if func_count / float(len(bv.functions)) < 0.5:
-		log.log_warn("Functions that don't have a name or symbol will be skipped")
+		num_skipped = len(bv.functions) - func_count
+		log.log_warn("%d functions that don't have a name or symbol will be skipped" % (num_skipped,))
 
 	funcs = {}
 	for func in bv.functions:
 		if bv.get_symbol_at(func.start) is None: continue
-		func_node, info = compute_sig.process_function(func, guess_relocs)
+		func_node, info = generate_function_signature(func, guess_relocs)
 		funcs[func_node] = info
 		log.log_debug('Processed ' + func.name)
 
-	log.log_info('Constructing signature trie')
+	log.log_debug('Constructing signature trie')
 	trie = signaturelibrary.new_trie()
 	trie_ops.trie_insert_funcs(trie, funcs)
 	log.log_debug('Finalizing trie')
 	trie_ops.finalize_trie(trie, funcs)
 
-	output_filename = get_save_filename_input("Filename:", "*.sig", bv.file.filename + '.sig').decode('utf-8')
+	output_filename = get_save_filename_input("Filename:", "*.sig", bv.file.filename + '.sig')
 	if not output_filename:
-		log.log_info('Cancelled')
+		log.log_debug('Save cancelled')
 		return
+	output_filename = output_filename.decode('utf-8')
 	buf = sig_serialize_fb.SignatureLibraryWriter().serialize(trie)
 	with open(output_filename, 'wb') as f:
 		f.write(buf)
 	log.log_info('Saved to ' + output_filename)
 
-
-def explore_signature_library(bv):
-	app = sigexplorer.App()
-	app.open_file()
-	app.show()
-
 PluginCommand.register(
 	"Signature Library\\Generate Signature Library",
 	"Create a Signature Library that the Signature Matcher can use to locate functions.",
-	generate_signature_library
+	_generate_signature_library
 )
 
 PluginCommand.register(
 	"Signature Library\\Explore Signature Library",
 	"View a Signature Library's contents in a graphical interface.",
-	explore_signature_library
+	lambda bv: signature_explorer()
 )

@@ -1,0 +1,75 @@
+namespace FlatbufSignatureLibrary;
+
+struct CallRef {
+  // offset from the start of the function to the call instruction
+  offset: int (key);
+
+  // the index of the callee function in the signature library's
+  // function vector. a value of -1 indicates a missing, or 'null'
+  // node, that becomes a wildcard when matching.
+  dst_id: int;
+}
+
+table Pattern {
+  // pattern data.
+  // e.g., for 4142??3132 it would be \x41\x42\x00\x31\x32
+  data: [ubyte] (required);
+
+  // bitfield of the mask in LSB order.
+  // e.g., for x?xxxxxx xxx? the mask it would be [0b11111101, 0b0111]
+  mask: [ubyte] (required);
+}
+
+table Function {
+  // name of the function
+  name: string (required);
+
+  // which object file or binary the function came from
+  source_binary: string;
+  
+  // a map representing the functions this function calls.
+  callees: [CallRef];
+
+  // optional disambiguation pattern
+  pattern: Pattern;
+
+  pattern_offset: uint;
+  
+  // if true, this function is a "bridge" node that serves only to link
+  // two function nodes on the callgraph. bridge nodes don't exist in
+  // the signature trie, only in the callgraph. typically, this is
+  // because the function is too short to put in the signature trie
+  // while avoiding false positives.
+  is_bridge: bool;
+}
+
+table TrieNode {
+  // this is the first byte of the pattern. this is used as the key
+  // in the children map so that children can be selected using binary search
+  // if the pattern's first byte is a wildcard, then this field is left
+  // as zero and `wildcard_child' is used in place of `children'.
+  patternPrefix: ubyte (key);
+
+  // pattern this trie node matches
+  pattern: Pattern (required);
+
+  // map of child nodes from their pattern's first byte to the node.
+  children: [TrieNode];
+
+  // child node whose pattern begins with a wildcard, if such a child node exists
+  wildcard_child: TrieNode;
+
+  // the functions this trie node matches.
+  functions: [uint];
+}
+
+table SignatureLibrary {
+  // a vector of all of the function nodes present in this signature library.
+  functions: [Function] (required);
+  
+  // the root trie node.
+  root: TrieNode (required);
+}
+
+file_extension "sig";
+root_type SignatureLibrary;

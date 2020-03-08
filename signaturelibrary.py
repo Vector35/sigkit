@@ -37,6 +37,7 @@ else:
 import functools
 from itertools import starmap
 
+
 @functools.total_ordering # for sorted()
 class MaskedByte(object):
 	"""
@@ -149,6 +150,7 @@ class MaskedByte(object):
 MaskedByte.wildcard = MaskedByte(0, 0)
 MaskedByte.cache = [MaskedByte(value, 1) for value in range(256)]
 
+
 class Pattern():
 	"""
 	Represents a pattern used for matching byte sequences; a sequence of MaskedByte.
@@ -240,6 +242,27 @@ class Pattern():
 		for b in self._array:
 			yield b.mask
 
+
+class FunctionInfo(object):
+	"""
+	Stores additional information about functions that are useful while generating and manipulating
+	signature libraries, but excluded from the finalized signature library to save space.
+	This information is also used to simulate linking when generating the call-graph.
+	"""
+	def __init__(self):
+		self.patterns = None
+		"""list of `Pattern`s which match this function"""
+
+		self.callees = None
+		"""dictionary of {offset: (destination name, `ReferenceType`)}; other symbols this function calls"""
+
+		self.aliases = None
+		"""list of string containing other possible names that could link to this function"""
+
+	def __str__(self):
+		return '<FunctionInfo>'
+
+
 class FunctionNode(object):
 	"""
 	Represents a function that we would like to match and contains relevant metadata for matching purposes.
@@ -283,6 +306,7 @@ class FunctionNode(object):
 			result += ':' + str(self.pattern) + '@' + str(self.pattern_offset)
 		result += '>'
 		return result
+
 
 class TrieNode(object):
 	"""
@@ -474,6 +498,7 @@ class TrieNode(object):
 		for func_node in self.all_values():
 			for func in visit(func_node, visited):
 				yield func
+
 
 def new_trie():
 	"""

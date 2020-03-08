@@ -43,18 +43,6 @@ from binaryninja import SymbolType
 
 from . import signaturelibrary
 
-class FunctionInfo(object):
-	"""
-	Stores additional information about functions that are useful while generating and manipulating
-	signature libraries, but excluded from the finalized signature library to save space.
-	This information is also used to simulate linking when generating the call-graph.
-	"""
-	def __init__(self):
-		self.patterns = None
-		self.callees = None
-		self.aliases = None
-
-
 def are_names_compatible(a, b):
 	if a == b:
 		return True

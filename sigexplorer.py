@@ -485,7 +485,11 @@ class TrieView(QTreeView):
 
 		return ''
 
-def show_signature_library(sig_trie):
+def explore_signature_library(sig_trie):
+	"""
+	Display an in-memory signature trie in the signature explorer GUI.
+	:param sig_trie: instance of `TrieNode`
+	"""
 	if not QApplication.instance():
 		app = QApplication(sys.argv)
 	else:
