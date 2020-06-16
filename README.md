@@ -1,4 +1,4 @@
-# Signature Kit Plugin (v1.1)
+# Signature Kit Plugin (v1.1.1)
 Author: **Vector 35 Inc**
 _Python tools for working with Signature Libraries_
 ## Description:
@@ -8,7 +8,7 @@ This plugin provides Python tools for generating, manipulating, viewing, loading
 ![Signature Explorer](https://raw.githubusercontent.com/vector35/sigkit/master/images/explorer.png)
 
 Also included are [example scripts](https://github.com/Vector35/sigkit/tree/master/examples) which demonstrate batch processing and automatic creation of signature libraries for Ubuntu libc.
-
+You can also run the Signature Explorer GUI as a standalone app.
 
 
 ## Installation Instructions

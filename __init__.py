@@ -58,11 +58,16 @@ def signature_explorer(prompt=True):
 	:param prompt: if True, prompt the user to open a file immediately.
 	:return: `App`, a QT window
 	"""
-	app = sigexplorer.App()
+	from PySide2.QtWidgets import QApplication
+	app = QApplication.instance()
+	global widget # avoid lifetime issues from it falling out of scope
+	widget = sigexplorer.App()
 	if prompt:
-		app.open_file()
-	app.show()
-	return app
+		widget.open_file()
+	widget.show()
+	if app: # VERY IMPORTANT to avoiding lifetime issues???
+		app.exec_()
+	return widget
 
 
 # UI plugin code

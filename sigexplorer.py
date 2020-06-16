@@ -36,6 +36,12 @@ import pickle
 import json
 import zlib
 
+if __name__ == "__main__" and __package__ is None:
+	__package__ = os.path.basename(os.getcwd())
+	sys.path.append(os.path.dirname(os.getcwd()))
+	__import__(__package__) # python2 compat
+	print('Please run with python -m %s.%s instead of %s directly.' % (__package__, os.path.splitext(__file__)[0], __file__))
+
 from . import sig_serialize_json
 from . import sig_serialize_fb
 
