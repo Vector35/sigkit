@@ -25,12 +25,21 @@ from __future__ import print_function
 import sys
 import os
 
-from PySide2.QtCore import (Qt, QRect, QItemSelectionModel, QItemSelection, QSize, Signal)
-from PySide2.QtGui import (QStandardItemModel, QIcon, QStandardItem, QKeySequence, QFont, QBrush, QTextDocument,
-						   QCursor, QFontDatabase, QPalette)
-from PySide2.QtWidgets import (QApplication, QTreeView, QVBoxLayout, QWidget, QMenu, QAction, QMainWindow, QFileDialog,
-							   QStyledItemDelegate, QStyle, QGroupBox, QHBoxLayout, QPushButton, QAbstractItemView,
-							   QInputDialog, QMessageBox, QLabel)
+import binaryninjaui
+if "qt_major_version" in binaryninjaui.__dict__ and binaryninjaui.qt_major_version == 6:
+	from PySide6.QtCore import (Qt, QRect, QItemSelectionModel, QItemSelection, QSize, Signal)
+	from PySide6.QtGui import (QStandardItemModel, QIcon, QStandardItem, QKeySequence, QFont, QBrush, QTextDocument,
+								QCursor, QFontDatabase, QPalette, QAction)
+	from PySide6.QtWidgets import (QApplication, QTreeView, QVBoxLayout, QWidget, QMenu, QMainWindow, QFileDialog,
+									QStyledItemDelegate, QStyle, QGroupBox, QHBoxLayout, QPushButton, QAbstractItemView,
+									QInputDialog, QMessageBox, QLabel)
+else:
+	from PySide2.QtCore import (Qt, QRect, QItemSelectionModel, QItemSelection, QSize, Signal)
+	from PySide2.QtGui import (QStandardItemModel, QIcon, QStandardItem, QKeySequence, QFont, QBrush, QTextDocument,
+								QCursor, QFontDatabase, QPalette)
+	from PySide2.QtWidgets import (QApplication, QTreeView, QVBoxLayout, QWidget, QMenu, QAction, QMainWindow, QFileDialog,
+									QStyledItemDelegate, QStyle, QGroupBox, QHBoxLayout, QPushButton, QAbstractItemView,
+									QInputDialog, QMessageBox, QLabel)
 
 import pickle
 import json
@@ -360,7 +369,7 @@ class PatternDelegate(QStyledItemDelegate):
 
 		offset = 3
 		ellipsis = '…'
-		ellipsisWidth = painter.fontMetrics().width(ellipsis)
+		ellipsisWidth = painter.fontMetrics().horizontalAdvance(ellipsis)
 		rightBorder = option.rect.left() + option.rect.width() - offset
 
 		option.rect.moveRight(option.rect.right() + offset)
@@ -379,7 +388,7 @@ class PatternDelegate(QStyledItemDelegate):
 				color = 0
 				painter.setPen(defaultPen)
 
-			charWidth = painter.fontMetrics().width(c)
+			charWidth = painter.fontMetrics().horizontalAdvance(c)
 			drawRect = option.rect
 			if drawRect.left() + charWidth + ellipsisWidth > rightBorder:
 				style.drawItemText(painter, drawRect, option.displayAlignment, option.palette, True, ellipsis, textRole)

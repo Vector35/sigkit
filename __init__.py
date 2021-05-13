@@ -20,6 +20,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 # IN THE SOFTWARE.
 
+import binaryninjaui
 from binaryninja import *
 
 # exports
@@ -58,7 +59,10 @@ def signature_explorer(prompt=True):
 	:param prompt: if True, prompt the user to open a file immediately.
 	:return: `App`, a QT window
 	"""
-	from PySide2.QtWidgets import QApplication
+	if "qt_major_version" in binaryninjaui.__dict__ and binaryninjaui.qt_major_version == 6:
+		from PySide6.QtWidgets import QApplication
+	else:
+		from PySide2.QtWidgets import QApplication
 	app = QApplication.instance()
 	global widget # avoid lifetime issues from it falling out of scope
 	widget = sigexplorer.App()

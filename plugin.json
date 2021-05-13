@@ -16,7 +16,7 @@
 		"Darwin":""
 	},
 	"dependencies": {
-		"pip": [ "flatbuffers", "PySide2"]
+		"pip": [ "flatbuffers" ]
 	},
 	"version": "1.1.2",
 	"author": "Vector 35 Inc",
