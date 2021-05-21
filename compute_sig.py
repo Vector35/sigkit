@@ -239,5 +239,8 @@ def process_function(func, guess_relocs):
 	info = signaturelibrary.FunctionInfo()
 	info.patterns = [function_pattern(func, guess_relocs)]
 	info.callees = compute_callees(func)
-	info.aliases = list(map(lambda s: s.decode('utf-8'), func.symbol.aliases))
+	if hasattr(func.symbol, 'aliases'):
+		info.aliases = list(map(lambda s: s.decode('utf-8'), func.symbol.aliases))
+	else:
+		info.aliases = []
 	return func_node, info
