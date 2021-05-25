@@ -18,7 +18,7 @@
 	"dependencies": {
 		"pip": [ "flatbuffers" ]
 	},
-	"version": "1.1.2",
+	"version": "1.2.0",
 	"author": "Vector 35 Inc",
 	"minimumbinaryninjaversion": 1997
 }
