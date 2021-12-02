@@ -1,7 +1,10 @@
-# Signature Kit Plugin (v1.1.1)
+# Signature Kit Plugin (v1.2.1)
 Author: **Vector 35 Inc**
+
 _Python tools for working with Signature Libraries_
+
 ## Description:
+
 This plugin provides Python tools for generating, manipulating, viewing, loading, and saving signature libraries (.sig) for the Signature System. This plugin also provides UI integration for easy access from the Binary Ninja UI to common functions in the `Tools\Signature Library` menu.
 
 
@@ -17,26 +20,27 @@ You can also run the Signature Explorer GUI as a standalone app.
 
 
 
+### Linux
+
+
+
 ### Darwin
 
-
-
-### Linux
 
 
 ## Minimum Version
 
 This plugin requires the following minimum version of Binary Ninja:
 
- * 1997
-"
+* 1997
+
 
 
 ## Required Dependencies
 
 The following dependencies are required for this plugin:
 
- * pip - flatbuffers, PySide2
+ * pip - flatbuffers
 
 
 ## License
