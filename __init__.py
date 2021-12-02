@@ -106,7 +106,8 @@ def _generate_signature_library(bv):
 	if not output_filename:
 		log.log_debug('Save cancelled')
 		return
-	output_filename = output_filename.decode('utf-8')
+	if isinstance(output_filename, bytes):
+		output_filename = output_filename.decode('utf-8')
 	buf = sig_serialize_fb.SignatureLibraryWriter().serialize(trie)
 	with open(output_filename, 'wb') as f:
 		f.write(buf)
