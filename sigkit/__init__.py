@@ -1,4 +1,3 @@
-import binaryninjaui
 from binaryninja import *
 
 # exports
@@ -9,6 +8,9 @@ from . import sig_serialize_json
 from .signaturelibrary import TrieNode, FunctionNode, Pattern, MaskedByte, new_trie
 from .compute_sig import process_function as generate_function_signature
 from .sigexplorer import explore_signature_library
+
+if core_ui_enabled():
+	import binaryninjaui
 
 def signature_explorer(prompt=True):
 	"""
