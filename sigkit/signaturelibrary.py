@@ -283,7 +283,7 @@ class FunctionNode(object):
 		self.pattern = Pattern(b'', [])
 		self.pattern_offset = 0
 
-		self.callees = None
+		self.callees = {}
 		"""Forms a callgraph with other `FunctionNodes`. Dict of {call_offset: destination}."""
 
 		self.ref_count = 0
