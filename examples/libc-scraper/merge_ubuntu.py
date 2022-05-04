@@ -38,7 +38,7 @@ import sigkit.signaturelibrary
 import sigkit.trie_ops
 import sigkit.sig_serialize_fb
 
-cpu_factor = int(math.ceil(math.sqrt(os.cpu_count())))
+cpu_factor = max([1, os.cpu_count() - 1])
 
 # delete weird, useless funcs and truncate names
 def cleanup_info(func_info, maxlen=40):

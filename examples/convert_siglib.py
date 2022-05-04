@@ -39,7 +39,8 @@ if __name__ == '__main__':
 
 	# Load a signature library.
 	filename = sys.argv[1]
-	basename, ext = filename[:filename.index('.')], filename[filename.index('.'):]
+	basename, ext = filename[:filename.rindex('.')], filename[filename.rindex('.'):]
+	print(basename, ext)
 	if ext == '.sig':
 		with open(filename, 'rb') as f:
 			sig_trie = sig_serialize_fb.load(f)
@@ -51,12 +52,20 @@ if __name__ == '__main__':
 			sig_trie =  sig_serialize_json.deserialize(json.loads(zlib.decompress(f.read()).decode('utf-8')))
 	elif ext == '.pkl':
 		with open(filename, 'rb') as f:
-			sig_trie = pickle.load(f)
+			pkl_funcs = pickle.load(f)
+			trie, func_info = signaturelibrary.new_trie(), {}
+			# cleanup_info(pkl_funcs)
+			trie_ops.trie_insert_funcs(trie, pkl_funcs)
+			func_info.update(pkl_funcs)
+			trie_ops.finalize_trie(trie, func_info)
+			sig_trie = trie
 	else:
 		print('Unsupported file extension ' + ext)
 		sys.exit(1)
 
 	# Save the signature library to a binary format and write it to a file.
+	print(type(sig_trie))
+
 	buf = sig_serialize_fb.dumps(sig_trie)
 	with open(basename + '.sig', 'wb') as f:
 		f.write(buf)

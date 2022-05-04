@@ -60,10 +60,19 @@ def on_analysis_complete(self):
 def process_binary(input_binary):
 	global wg
 	print(input_binary, ': loading')
+	input_binary = str(input_binary)
+
 	if input_binary.endswith('.dll'):
 		bv = binaryninja.BinaryViewType["PE"].open(input_binary)
 		cxt = PluginCommandContext(bv)
 		PluginCommand.get_valid_list(cxt)['PDB\\Load (BETA)'].execute(cxt)
+	elif input_binary.endswith('.obj'):
+		# need to pre-validate COFF files
+		bv = binaryninja.BinaryViewType["Raw"].open(input_binary)
+		coff = binaryninja.BinaryViewType["COFF"]
+		if not coff.is_valid_for_data(bv):
+			return
+		bv = coff.open(input_binary)
 	elif input_binary.endswith('.o'):
 		bv = binaryninja.BinaryViewType["ELF"].open(input_binary)
 	else:
@@ -89,7 +98,7 @@ if __name__ == '__main__':
 	import sys
 	from pathlib import Path
 	if len(sys.argv) < 3:
-		print('Usage: %s <input glob> <func info pickle>' % (sys.argv[0]))
+		print('Usage: %s <input glob> <output func info pickle>' % (sys.argv[0]))
 		print('The pickle designates the filename of a pickle file that the computed function metadata will be saved to.')
 		sys.exit(1)
 
@@ -98,9 +107,9 @@ if __name__ == '__main__':
 	results = mp.Queue()
 
 	func_info = {}
-
+	import glob
 	with mp.Pool(mp.cpu_count(), initializer=init_child, initargs=(wg, results)) as pool:
-		pool.map(process_binary, map(str, Path('.').glob(sys.argv[1])))
+		pool.map(process_binary, map(str, glob.glob(sys.argv[1])))
 
 		while True:
 			time.sleep(0.1)

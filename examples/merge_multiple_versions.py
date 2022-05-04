@@ -31,12 +31,13 @@ This script loads pickled dicts of {FunctionNode: FunctionInfo} generated
 by batch_process.py.
 """
 
+import sys
 import pickle, json
 import gc
 from pathlib import Path
 
 import sigkit.signaturelibrary, sigkit.trie_ops, sigkit.sig_serialize_json, sigkit.sigexplorer
-
+from sigkit import sig_serialize_fb
 
 def func_count(trie):
 	return len(set(trie.all_functions()))
@@ -53,10 +54,10 @@ def preprocess_funcs_list(func_info):
 	for f in to_delete:
 		del func_info[f]
 
-def load_pkls(path, glob):
-	pkls = list(map(str, Path(path).glob(glob)))
+def load_pkls(path, files):
 	trie, func_info = sigkit.signaturelibrary.new_trie(), {}
-	for pkl in pkls:
+	for pkl in files:
+		print(f"pkl {pkl}")
 		with open(pkl, 'rb') as f:
 			pkl_funcs = pickle.load(f)
 			preprocess_funcs_list(pkl_funcs)
@@ -65,9 +66,10 @@ def load_pkls(path, glob):
 	sigkit.trie_ops.finalize_trie(trie, func_info)
 	return trie, func_info
 
+import sys
 gc.disable() # I AM SPEED - Lightning McQueen
-dst_trie, dst_info = load_pkls('.', 'libc_version1/*.pkl')
-src_trie, src_info = load_pkls('.', 'libc_version2/*.pkl')
+dst_trie, dst_info = load_pkls('.', [sys.argv[1]])
+src_trie, src_info = load_pkls('.', sys.argv[2:])
 gc.disable() # i am no longer speed.
 
 size1, size2 = func_count(dst_trie), func_count(src_trie)
@@ -79,5 +81,10 @@ print("Post-merge size: %d funcs" % (func_count(dst_trie),))
 sigkit.trie_ops.finalize_trie(dst_trie, dst_info)
 print("Finalized size: %d funcs" % (func_count(dst_trie),))
 
-print(json.dumps(sigkit.sig_serialize_json.serialize(dst_trie)))
-sigkit.explore_signature_library(dst_trie)
+buf = sig_serialize_fb.dumps(dst_trie)
+basename = "msvcrt"
+with open(basename + '.sig', 'wb') as f:
+	f.write(buf)
+
+# print(json.dumps(sigkit.sig_serialize_json.serialize(dst_trie)))
+# sigkit.sigexplorer.explore_signature_library(dst_trie)
