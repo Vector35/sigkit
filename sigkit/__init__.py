@@ -52,8 +52,10 @@ if core_ui_enabled():
 		for func in bv.functions:
 			if bv.get_symbol_at(func.start) is None: continue
 			func_node, info = generate_function_signature(func, guess_relocs)
-			funcs[func_node] = info
-			log.log_debug('Processed ' + func.name)
+			if func_node and info:
+				funcs[func_node] = info
+				log.log_debug('Processed ' + func.name)
+			
 
 		log.log_debug('Constructing signature trie')
 		trie = signaturelibrary.new_trie()
