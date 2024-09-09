@@ -1,4 +1,4 @@
-# Signature Kit Plugin (v1.2.1)
+# Signature Kit Plugin (v1.2.2)
 Author: **Vector 35 Inc**
 
 _Python tools for working with Signature Libraries_
