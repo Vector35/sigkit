@@ -61,10 +61,14 @@ if core_ui_enabled():
 		log.log_debug('Finalizing trie')
 		trie_ops.finalize_trie(trie, funcs)
 
-		output_filename = get_save_filename_input("Filename:", "*.sig", bv.file.filename + '.sig')
-		if not output_filename:
-			log.log_debug('Save cancelled')
-			return
+
+		if 'SIGNATURE_FILE_NAME' in bv.session_data:
+			output_filename = bv.session_data['SIGNATURE_FILE_NAME']
+		else:
+			output_filename = get_save_filename_input("Filename:", "*.sig", bv.file.filename + '.sig')
+			if not output_filename:
+				log.log_debug('Save cancelled')
+				return
 		if isinstance(output_filename, bytes):
 			output_filename = output_filename.decode('utf-8')
 		buf = sig_serialize_fb.SignatureLibraryWriter().serialize(trie)
