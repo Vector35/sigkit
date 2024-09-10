@@ -66,7 +66,7 @@ def guess_relocations_mask(func, sig_length):
 			i += 1
 			continue
 		for insn_len in bb._instLengths:
-			# This throws excpetion for large functiosn where you need to manaully force analysis
+			# This throws an exception for large functions where you need to manually force analysis
 			try:
 				llil = func.get_low_level_il_at(func.start + i, bb.arch)
 			except exceptions.ILException:
