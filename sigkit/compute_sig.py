@@ -66,7 +66,13 @@ def guess_relocations_mask(func, sig_length):
 			i += 1
 			continue
 		for insn_len in bb._instLengths:
-			llil = func.get_low_level_il_at(func.start + i, bb.arch)
+			# This throws an exception for large functions where you need to manually force analysis
+			try:
+				llil = func.get_low_level_il_at(func.start + i, bb.arch)
+			except exceptions.ILException:
+				log_warn(f"Skipping function at {hex(func.start)}. You need to force the analysis of this function.")
+				return None
+
 			insn_mask = not is_llil_relocatable(llil)
 			# if not insn_mask:
 			#     func.set_auto_instr_highlight(func.start + i, HighlightStandardColor.BlueHighlightColor)
@@ -202,6 +208,8 @@ def function_pattern(func, guess_relocs, sig_length=None):
 		mask = guess_relocations_mask(func, sig_length)
 	else:
 		mask = relocations_mask(func, sig_length)
+	if not mask:
+		return None
 	mask = list(map(int, mask)) # bool to int
 	data = b''
 	i = 0
@@ -237,7 +245,10 @@ def process_function(func, guess_relocs):
 	func_node.source_binary = func.view.file.filename
 
 	info = signaturelibrary.FunctionInfo()
-	info.patterns = [function_pattern(func, guess_relocs)]
+	function_pattern_val = function_pattern(func, guess_relocs)
+	if not function_pattern_val:
+		return None, None
+	info.patterns = [function_pattern_val]
 	info.callees = compute_callees(func)
 	if hasattr(func.symbol, 'aliases'):
 		info.aliases = list(map(lambda s: s.decode('utf-8'), func.symbol.aliases))
