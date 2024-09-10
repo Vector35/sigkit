@@ -5,7 +5,7 @@ _Python tools for working with Signature Libraries_
 
 ## Description:
 
-This plugin provides Python tools for generating, manipulating, viewing, loading, and saving signature libraries (.sig) for the Signature System. This plugin also provides UI integration for easy access from the Binary Ninja UI to common functions in the `Tools\Signature Library` menu.
+This plugin provides Python tools for generating, manipulating, viewing, loading, and saving signature libraries (.sig) for the Signature System. This plugin also provides UI integration for easy access from the Binary Ninja UI to common functions in the `Plugins\Signature Library` menu.
 
 
 ![Signature Explorer](https://raw.githubusercontent.com/vector35/sigkit/master/images/explorer.png)
