@@ -3,6 +3,10 @@ Author: **Vector 35 Inc**
 
 _Python tools for working with Signature Libraries_
 
+## ⚠️ Deprecation Notice
+
+**SigKit is no longer under active development.  For more information, please see https://binary.ninja/2025/08/22/warp.html**.
+
 ## Description:
 
 This plugin provides Python tools for generating, manipulating, viewing, loading, and saving signature libraries (.sig) for the Signature System. This plugin also provides UI integration for easy access from the Binary Ninja UI to common functions in the `Plugins\Signature Library` menu.
